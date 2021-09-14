@@ -1,0 +1,132 @@
+version: 2.1
+
+dfs_context: &dfs_context
+  context: DFS_CONTEXT
+
+default_job: &default_job
+  working_directory: ~/repo
+  environment:
+    TZ: Europe/Berlin
+    THREAD_COUNT: '2'
+    _JAVA_OPTIONS: '-Xmx3g'
+    GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2'
+
+executors:
+  java:
+    docker:
+      - image: circleci/openjdk:11-jdk
+    <<: *default_job
+  node:
+    docker:
+      - image: circleci/node:10
+    <<: *default_job
+
+commands:
+  export_build_info:
+    description: Export build information
+    steps:
+      - run:
+          name: Export ENV variables with build information
+          command: .circleci/export_properties.sh
+
+  restore_repo:
+    description: Restore the repo from cache to increase build stability and reduce load times.
+    steps:
+      - attach_workspace:
+          at: ~/repo
+
+  restore_repo_with_env:
+    description: Restore the repo from cache with environment variables to increase build stability and reduce load times.
+    steps:
+      - restore_repo
+      - export_build_info
+
+  restore_service_cache:
+    description: Restore build cache
+    steps:
+      - restore_cache:
+          keys:
+            - &gradle-wrapper-key v1-gradle-wrapper-{{ checksum "~/repo/gradle/wrapper/gradle-wrapper.properties" }}
+            - v1-gradle-wrapper-
+      - restore_cache:
+          keys:
+            - &gradle-cache-key v1-gradle-cache-{{ checksum "~/repo/build.gradle.kts" }}
+            - v1-gradle-cache-
+
+  save_service_cache:
+    description: Save the build cache
+    steps:
+      - save_cache:
+          paths:
+            - ~/.gradle/wrapper
+          key: *gradle-wrapper-key
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+          key: *gradle-cache-key
+
+jobs:
+  checkout_repo:
+    executor: node
+    steps:
+      - checkout
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - ./*
+
+  assemble_service:
+    executor: java
+    steps:
+      - restore_repo_with_env
+      - restore_service_cache
+      - run:
+          name: Assemble jar
+          command: |
+            cd service && ./gradlew assemble
+      - save_service_cache
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - service/build/*
+
+  test_service:
+    executor: java
+    steps:
+      - restore_repo
+      - restore_service_cache
+      - run:
+          name: Execute Tests
+          command: |
+            cd service && ./gradlew coverage
+      - store_test_results:
+          path: service/build/test-results/test
+
+  build_container_image:
+    executor: node
+    steps:
+      - restore_repo_with_env
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Container Image
+          command: |
+            .circleci/docker.sh service graffitiboard graffitiboard
+          no_output_timeout: 5m
+
+
+workflows:
+  version: 2
+  default:
+    jobs:
+      - checkout_repo
+      - assemble_service:
+          requires:
+            - checkout_repo
+#      - test_service:
+      #          requires:
+      #            - checkout_repo
+      - build_container_image:
+          <<: *dfs_context
+          requires:
+            - assemble_service
