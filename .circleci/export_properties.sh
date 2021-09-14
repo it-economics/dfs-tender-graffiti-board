@@ -1,6 +1,6 @@
 #!/bin/sh
 
-BUILD_VERSION=$(cat ./build.gradle.kts | sed -En 's/^version = "(.+)"$/\1/p')
+BUILD_VERSION=$(cat ./service/build.gradle.kts | sed -En 's/^version = "(.+)"$/\1/p')
 GIT_COMMIT_ID="$(git rev-parse --short=8 HEAD)"
 COMMIT_USER="$(git log -1 --pretty=format:'%an')"
 COMMIT_MESSAGE="$(git log -1 --pretty=format:'%s')"
