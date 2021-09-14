@@ -1,0 +1,14 @@
+server:
+  port: 8085
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+dfs:
+  board:
+    security:
+      users:
+        - name: John
+          password: Doe
+        - name: Max
+          password: Mustermann
