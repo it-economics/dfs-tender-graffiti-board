@@ -1,4 +1,4 @@
-package de.dfs.graffitiboard.api
+package de.dfs.graffitiboard.message.api
 
 import javax.validation.constraints.Size
 

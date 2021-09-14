@@ -1,7 +1,7 @@
-package de.dfs.graffitiboard.api
+package de.dfs.graffitiboard.message.api
 
 import de.dfs.graffitiboard.security.Roles
-import de.dfs.graffitiboard.service.MessageService
+import de.dfs.graffitiboard.message.service.MessageService
 import org.springframework.http.CacheControl
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -14,11 +14,11 @@ import javax.validation.Valid
 @Validated
 @RestController
 @RequestMapping(
-    value = ["/board"],
+    value = ["/messages"],
     produces = [MediaType.APPLICATION_JSON_VALUE]
 )
 @Secured(Roles.USER_ROLE)
-class BoardController(
+class MessageController(
     private val messageService: MessageService,
     private val messageFlux: Flux<MessageReadDto>
 ) {
@@ -26,12 +26,12 @@ class BoardController(
     @GetMapping
     fun getAll() = messageService.findAll()
 
-    @PostMapping("/message")
+    @PostMapping()
     fun post(@Valid @RequestBody message: MessageDto): ResponseEntity<MessageReadDto> =
         messageService.create(message)
             .let { ResponseEntity.ok(it) }
 
-    @GetMapping(value = ["/messages"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    @GetMapping(value = ["/subscribe"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     fun notifications(): ResponseEntity<Flux<MessageReadDto>> {
         val cacheControl = CacheControl.noCache().noTransform()
 

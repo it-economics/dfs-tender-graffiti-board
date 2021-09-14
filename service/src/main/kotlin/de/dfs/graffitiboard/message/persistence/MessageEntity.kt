@@ -1,4 +1,4 @@
-package de.dfs.graffitiboard.persistence
+package de.dfs.graffitiboard.message.persistence
 
 import org.hibernate.annotations.CreationTimestamp
 import java.time.ZonedDateTime

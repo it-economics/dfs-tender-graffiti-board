@@ -1,9 +1,9 @@
-package de.dfs.graffitiboard.service
+package de.dfs.graffitiboard.message.service
 
-import de.dfs.graffitiboard.api.MessageDto
-import de.dfs.graffitiboard.api.MessageReadDto
-import de.dfs.graffitiboard.persistence.MessageEntity
-import de.dfs.graffitiboard.persistence.MessageRepository
+import de.dfs.graffitiboard.message.api.MessageDto
+import de.dfs.graffitiboard.message.api.MessageReadDto
+import de.dfs.graffitiboard.message.persistence.MessageEntity
+import de.dfs.graffitiboard.message.persistence.MessageRepository
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Sinks

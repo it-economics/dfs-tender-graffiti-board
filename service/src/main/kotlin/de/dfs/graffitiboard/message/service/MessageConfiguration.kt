@@ -1,6 +1,6 @@
-package de.dfs.graffitiboard.service
+package de.dfs.graffitiboard.message.service
 
-import de.dfs.graffitiboard.api.MessageReadDto
+import de.dfs.graffitiboard.message.api.MessageReadDto
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import reactor.core.publisher.Flux
