@@ -1,9 +1,14 @@
 server:
   port: 8085
 spring:
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
+  datasource:
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+    url: ${DB_CONNECTION_URL:jdbc:h2:mem:GRAFFITI_BOARD;MODE=MSSQLServer}
+    driver-class-name: ${DB_DRIVER_CLASSNAME:org.h2.Driver}
+  flyway:
+    locations: classpath:db/migration/sqlserver
+    enabled: true
 dfs:
   board:
     security:

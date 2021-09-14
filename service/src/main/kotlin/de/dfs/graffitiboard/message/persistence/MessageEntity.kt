@@ -14,7 +14,7 @@ data class MessageEntity(
 
     val author: String?,
 
-    @Column(name = "message_body", length = 300, nullable = false)
+    @Column(length = 300, nullable = false)
     val message: String
 ) {
     @Column(name = "created_at", nullable = false, updatable = false)
