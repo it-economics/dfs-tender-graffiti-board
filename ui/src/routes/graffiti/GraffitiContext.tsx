@@ -1,5 +1,6 @@
 import * as React from "react";
 import {PropsWithChildren} from "react";
+import {webSocket} from "rxjs/webSocket";
 
 export interface IGraffiti {
 	message: string
@@ -17,20 +18,28 @@ const GraffitiContext = React.createContext<IGraffitiContext>({
 	}
 });
 
-const staticGraffities = [
-	{message: "What's up?!"},
-	{message: 'London Calling', author: 'Paul'},
-	{message: 'Yellow Submarine', author: 'Ringo'},
-	{message: 'Lemon Tree', author: 'John'},
-	{message: 'Those are not the droids you are looking for', author: 'Obi-Wan'},
-];
+const subject = webSocket<IGraffiti>("ws://localhost:8085/message-socket");
 
 export function GraffitiContextProvider({children}: PropsWithChildren<{}>) {
 	const [dynamicGraffities, setDynamicGraffities] = React.useState<IGraffiti[]>([])
+	const handleNewGraffiti = (graffiti: IGraffiti) => {
+		subject.next(graffiti)
+	}
+	React.useEffect(() => {
+		subject
+			.subscribe({
+				next: (msg) => setDynamicGraffities(old => [...old, msg]),
+				error: (error) => console.error(error),
+				complete: () => console.info("Unsubscribed")
+			})
+		return () => {
+			subject.unsubscribe()
+		}
+	}, [])
 	return (
 		<GraffitiContext.Provider value={{
-			graffities: [...staticGraffities, ...dynamicGraffities],
-			addGraffiti: graffiti => setDynamicGraffities(old => [...old, graffiti])
+			graffities: dynamicGraffities,
+			addGraffiti: handleNewGraffiti
 		}}>
 			{children}
 		</GraffitiContext.Provider>

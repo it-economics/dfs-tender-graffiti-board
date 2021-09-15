@@ -13,5 +13,6 @@ class WebSocketConfig(
 
     override fun registerWebSocketHandlers(webSocketHandlerRegistry: WebSocketHandlerRegistry) {
         webSocketHandlerRegistry.addHandler(MessageSocketHandler(textMessageProcessor), "/message-socket")
+            .setAllowedOrigins("*")
     }
 }
