@@ -18,7 +18,7 @@ executors:
     <<: *default_job
   node:
     docker:
-      - image: circleci/node:10
+      - image: cimg/node:12.22
     <<: *default_job
 
 commands:
@@ -64,6 +64,22 @@ commands:
           paths:
             - ~/.gradle/caches
           key: *gradle-cache-key
+
+  restore_ui_cache:
+    description: Restore the UI cache.
+    steps:
+      - restore_cache:
+          keys:
+            - &ui-cache-key v1-ui-cache-{{ checksum "~/repo/ui/yarn.lock" }}
+            - v1-ui-cache-
+
+  save_ui_cache:
+    description: Save the UI cache.
+    steps:
+      - save_cache:
+          paths:
+            - ~/repo/ui/node_modules
+          key: *ui-cache-key
 
 jobs:
   checkout_repo:
@@ -113,6 +129,40 @@ jobs:
             .circleci/docker.sh service graphittiboard backend
           no_output_timeout: 5m
 
+  build_ui:
+    executor: node
+    steps:
+      - restore_repo_with_env
+      - restore_ui_cache
+      - run: cd ui && yarn && yarn build
+      - save_ui_cache
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - ui/build/*
+
+  test_ui:
+    executor: node
+    steps:
+      - restore_repo_with_env
+      - restore_ui_cache
+      - run: cd ui && yarn && yarn test:ci
+      - run:
+          name: Save Client Test Results
+          command: |
+            mkdir -p ~/test-results/ui
+            mv ./ui/junit.xml ~/test-results/ui
+          when: always
+      - store_test_results:
+          path: ~/test-results
+
+  container_image_ui:
+    executor: node
+    steps:
+      - restore_repo_with_env
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: .circleci/docker.sh ui pma ui
 
 workflows:
   version: 2
@@ -129,3 +179,13 @@ workflows:
           <<: *dfs_context
           requires:
             - assemble_service
+      - build_ui:
+          requires:
+            - checkout_repo
+#      - test_ui:
+#          requires:
+#            - checkout_repo
+#      - container_image_ui:
+#          requires:
+#            - build_ui
+#            - test_ui
