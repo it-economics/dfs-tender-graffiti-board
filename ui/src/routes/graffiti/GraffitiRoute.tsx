@@ -4,7 +4,7 @@ import {GraffitiContextProvider, IGraffiti, useGraffitiContext} from "./Graffiti
 export function GraffitiRoute() {
 	return (
 		<>
-			<h1 className="sm:text-3xl md:text-5xl text-center py-10">Graffiti AG</h1>
+			<h1 className="text-3xl md:text-5xl text-center py-10">Graffiti AG</h1>
 			<GraffitiContextProvider>
 				<div className="flex flex-col max-h-full">
 					<div className="pb-5 md:pb-16">
@@ -22,7 +22,6 @@ export function GraffitiRoute() {
 function Graffities() {
 	const {graffities} = useGraffitiContext();
 	return (
-		// <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-10 sm:gap-7">
 		<div className="flex flex-row flex-wrap gap-3 md:gap-5 justify-center">
 			{[...graffities].reverse().map((graffiti, idx) =>
 				<Graffiti key={`${graffiti.message.substr(0, 5)}-${graffiti.author}-${idx}`} graffiti={graffiti}/>
@@ -66,7 +65,7 @@ function GraffitiForm() {
 	const {addGraffiti} = useGraffitiContext();
 	const [message, setMessage] = React.useState<string>('')
 	const [author, setAuthor] = React.useState<string>('')
-	const canSubmit = message?.length ?? 0 > 0;
+	const canSubmit = message.length > 0;
 
 	const handleSubmit: React.FormEventHandler<HTMLFormElement> = event => {
 		event.preventDefault();
