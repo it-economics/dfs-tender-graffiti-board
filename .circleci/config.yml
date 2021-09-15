@@ -185,6 +185,7 @@ workflows:
       #          requires:
       #            - checkout_repo
       - container_image_ui:
+          <<: *dfs_context
           requires:
             - build_ui
 #            - test_ui
