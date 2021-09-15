@@ -19,7 +19,13 @@ class TextMessageProcessor(
     private val validator: Validator
 ) {
 
-    fun process(textMessage: TextMessage): TextMessage {
+    fun processNewConnection(): List<TextMessage> {
+        return messageService.findAll()
+            .map { mapToReadDto(it) }
+            .map { TextMessage(objectMapper.writeValueAsString(it)) }
+    }
+
+    fun processNewMessage(textMessage: TextMessage): TextMessage {
         val message = objectMapper.readValue<MessageDto>(textMessage.payload)
 
         val violations = validator.validate(message)
@@ -34,7 +40,6 @@ class TextMessageProcessor(
 
     private fun validationError(violations: Set<ConstraintViolation<MessageDto>>): ConstraintViolationException {
         val errorMessage = "Invalid message body: [${violations.joinToString { it.message }}]"
-        // TODO Define Error response 
         return ConstraintViolationException("{\"error\": \"$errorMessage\"", violations)
     }
 

@@ -18,12 +18,13 @@ class MessageSocketHandler(
         private val log = KotlinLogging.logger { }
     }
 
-    private val sessions: MutableList<WebSocketSession> = CopyOnWriteArrayList<WebSocketSession>()
+    private val sessions: MutableList<WebSocketSession> = CopyOnWriteArrayList()
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
         log.info { "User '${session.principal?.name}' establishes socket connection" }
         sessions.add(session)
         super.afterConnectionEstablished(session)
+        textMessageProcessor.processNewConnection().forEach { session.sendMessage(it) }
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
@@ -35,23 +36,20 @@ class MessageSocketHandler(
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         super.handleTextMessage(session, message)
 
-        runCatching { textMessageProcessor.process(message) }
-            .onSuccess { broadCastMessage(it, session) }
+        runCatching { textMessageProcessor.processNewMessage(message) }
+            .onSuccess {
+                log.info { "Broadcasting message to connected subscribers" }
+                sessions.forEach(sendMessage(message))
+            }
             .onFailure {
                 log.info { "Error while process incoming text message: ${it.message}" }
                 session.sendMessage(TextMessage(it.message!!))
             }
     }
 
-    private fun broadCastMessage(message: TextMessage, session: WebSocketSession) {
-        log.info { "Broadcasting message to connected subscribers" }
-
-        sessions.filterNot { it == session }
-            .forEach(
-                Consumer { webSocketSession: WebSocketSession ->
-                    runCatching { webSocketSession.sendMessage(message) }
-                        .onFailure { log.error(it.cause) { "Error occurred: ${it.message}" } }
-                }
-            )
-    }
+    private fun sendMessage(message: TextMessage) =
+        Consumer { webSocketSession: WebSocketSession ->
+            runCatching { webSocketSession.sendMessage(message) }
+                .onFailure { log.error(it.cause) { "Error occurred: ${it.message}" } }
+        }
 }
