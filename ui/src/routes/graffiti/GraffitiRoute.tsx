@@ -23,7 +23,7 @@ function Graffities() {
 	const {graffities} = useGraffitiContext();
 	return (
 		<div className="flex flex-row flex-wrap gap-3 md:gap-5 justify-center">
-			{[...graffities].reverse().map((graffiti, idx) =>
+			{graffities.map((graffiti, idx) =>
 				<Graffiti key={`${graffiti.message.substr(0, 5)}-${graffiti.author}-${idx}`} graffiti={graffiti}/>
 			)}
 		</div>
@@ -33,17 +33,14 @@ function Graffities() {
 function Graffiti({graffiti: {message, author}}: PropsWithChildren<{ graffiti: IGraffiti }>) {
 	function color(): string {
 		const rand = Math.random();
-		let color: string;
 		if (rand < 0.25) {
-			color = 'yellow';
+			return `dark:text-yellow-500 text-yellow-800`;
 		} else if (rand < 0.5) {
-			color = 'blue';
+			return `dark:text-blue-500 text-blue-800`;
 		} else if (rand < 0.75) {
-			color = 'red';
-		} else {
-			color = 'green';
+			return `dark:text-red-500 text-red-800`;
 		}
-		return `dark:text-${color}-500 text-${color}-800`;
+		return `dark:text-green-500 text-green-800`;
 	}
 
 	function rotate(): string {

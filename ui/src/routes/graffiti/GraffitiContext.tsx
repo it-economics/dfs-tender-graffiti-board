@@ -28,7 +28,7 @@ export function GraffitiContextProvider({children}: PropsWithChildren<{}>) {
 	React.useEffect(() => {
 		subject
 			.subscribe({
-				next: (msg) => setDynamicGraffities(old => [...old, msg]),
+				next: (msg) => setDynamicGraffities(old => [msg, ...old]),
 				error: (error) => console.error(error),
 				complete: () => console.info("Unsubscribed")
 			})
