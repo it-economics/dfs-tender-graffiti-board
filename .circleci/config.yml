@@ -160,8 +160,7 @@ jobs:
     executor: node
     steps:
       - restore_repo_with_env
-      - setup_remote_docker:
-          docker_layer_caching: true
+      - setup_remote_docker
       - run: .circleci/docker.sh ui graphitiboard ui
 
 workflows:
@@ -182,9 +181,9 @@ workflows:
       - build_ui:
           requires:
             - checkout_repo
-#      - test_ui:
-#          requires:
-#            - checkout_repo
+      #      - test_ui:
+      #          requires:
+      #            - checkout_repo
       - container_image_ui:
           requires:
             - build_ui
