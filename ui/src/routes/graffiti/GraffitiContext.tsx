@@ -18,7 +18,7 @@ const GraffitiContext = React.createContext<IGraffitiContext>({
 	}
 });
 
-const subject = webSocket<IGraffiti>("ws://localhost:8085/message-socket");
+const subject = webSocket<IGraffiti>("ws://52.236.150.50:8085/message-socket");
 
 export function GraffitiContextProvider({children}: PropsWithChildren<{}>) {
 	const [dynamicGraffities, setDynamicGraffities] = React.useState<IGraffiti[]>([])
