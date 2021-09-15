@@ -39,7 +39,7 @@ class MessageSocketHandler(
         runCatching { textMessageProcessor.processNewMessage(message) }
             .onSuccess {
                 log.info { "Broadcasting message to connected subscribers" }
-                sessions.forEach(sendMessage(message))
+                sessions.forEach(sendMessage(it))
             }
             .onFailure {
                 log.info { "Error while process incoming text message: ${it.message}" }

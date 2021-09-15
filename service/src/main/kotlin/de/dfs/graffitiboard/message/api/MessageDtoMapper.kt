@@ -8,5 +8,5 @@ class MessageDtoMapper {
 
     fun mapToMessage(messageDto: MessageDto) = Message(author = messageDto.author, message = messageDto.message)
 
-    fun mapToReadDto(message: Message) = MessageReadDto(message.author, message.message, message.createdAt)
+    fun mapToReadDto(message: Message) = MessageReadDto(message.author, message.message, message.createdAt!!)
 }
