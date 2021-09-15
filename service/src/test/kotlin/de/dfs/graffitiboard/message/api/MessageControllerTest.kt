@@ -9,6 +9,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.http.HttpStatus
 import reactor.core.publisher.Flux
 import java.time.ZonedDateTime
 
@@ -50,5 +51,19 @@ internal class MessageControllerTest {
         assertThat(sut.getAll()).isEmpty()
 
         verify { messageDtoMapper wasNot Called }
+    }
+
+    @Test
+    internal fun `post - when new message is posted it should be persisted properly`() {
+        val messageDto = MessageDto(author = "John Doe", message = "Hello World")
+
+        every { messageDtoMapper.mapToMessage(messageDto) } returns message1
+        every { messageService.create(message1) } returns message1
+        every { messageDtoMapper.mapToReadDto(message1) } returns messageReadDto1
+
+        val result = sut.post(messageDto)
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.body).isSameAs(messageReadDto1)
     }
 }
