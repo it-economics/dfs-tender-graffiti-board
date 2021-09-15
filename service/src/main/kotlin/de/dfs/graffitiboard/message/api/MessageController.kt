@@ -1,7 +1,8 @@
 package de.dfs.graffitiboard.message.api
 
-import de.dfs.graffitiboard.security.Roles
+import de.dfs.graffitiboard.message.service.Message
 import de.dfs.graffitiboard.message.service.MessageService
+import de.dfs.graffitiboard.security.Roles
 import org.springframework.http.CacheControl
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -20,15 +21,16 @@ import javax.validation.Valid
 @Secured(Roles.USER_ROLE)
 class MessageController(
     private val messageService: MessageService,
-    private val messageFlux: Flux<MessageReadDto>
+    private val messageFlux: Flux<Message>
 ) {
 
     @GetMapping
-    fun getAll() = messageService.findAll()
+    fun getAll(): List<MessageReadDto> = messageService.findAll().map { mapToReadDtp(it) }
 
     @PostMapping()
     fun post(@Valid @RequestBody message: MessageDto): ResponseEntity<MessageReadDto> =
-        messageService.create(message)
+        messageService.create(Message(author = message.author, message = message.message))
+            .let { mapToReadDtp(it) }
             .let { ResponseEntity.ok(it) }
 
     @GetMapping(value = ["/subscribe"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
@@ -37,6 +39,8 @@ class MessageController(
 
         return ResponseEntity.ok()
             .cacheControl(cacheControl)
-            .body(messageFlux.map { it })
+            .body(messageFlux.map { mapToReadDtp(it) })
     }
+
+    private fun mapToReadDtp(message: Message) = MessageReadDto(message.author, message.message, message.createdAt)
 }

@@ -5,5 +5,5 @@ import java.time.ZonedDateTime
 data class MessageReadDto(
     val author: String?,
     val message: String,
-    val createdAt: ZonedDateTime
+    val createdAt: ZonedDateTime?
 )

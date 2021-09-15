@@ -1,6 +1,5 @@
 package de.dfs.graffitiboard.message.service
 
-import de.dfs.graffitiboard.message.api.MessageReadDto
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import reactor.core.publisher.Flux
@@ -11,10 +10,10 @@ import java.time.Duration
 class MessageConfiguration {
 
     @Bean
-    fun messageSink(): Sinks.Many<MessageReadDto> {
+    fun messageSink(): Sinks.Many<Message> {
         return Sinks.many().replay().limit(Duration.ofHours(1L))
     }
 
     @Bean
-    fun messageFlux(notificationSink: Sinks.Many<MessageReadDto>): Flux<MessageReadDto> = notificationSink.asFlux()
+    fun messageFlux(notificationSink: Sinks.Many<Message>): Flux<Message> = notificationSink.asFlux()
 }

@@ -1,7 +1,5 @@
 package de.dfs.graffitiboard.message.service
 
-import de.dfs.graffitiboard.message.api.MessageDto
-import de.dfs.graffitiboard.message.api.MessageReadDto
 import de.dfs.graffitiboard.message.persistence.MessageEntity
 import de.dfs.graffitiboard.message.persistence.MessageRepository
 import mu.KotlinLogging
@@ -11,29 +9,29 @@ import reactor.core.publisher.Sinks
 @Service
 class MessageService(
     private val messageRepository: MessageRepository,
-    private val messageSink: Sinks.Many<MessageReadDto>
+    private val messageSink: Sinks.Many<Message>
 ) {
     companion object {
         private val log = KotlinLogging.logger { }
     }
 
-    fun create(message: MessageDto): MessageReadDto =
+    fun create(message: Message): Message =
         run { mapToEntity(message) }
             .let { messageRepository.save(it) }
-            .let { mapToDto(it) }
+            .let { mapToMessage(it) }
             .also { publish(it) }
 
-    fun findAll() = messageRepository.findAll().map { mapToDto(it) }
+    fun findAll() = messageRepository.findAll().map { mapToMessage(it) }
 
-    fun publish(message: MessageReadDto) {
+    fun publish(message: Message) {
         runCatching { messageSink.tryEmitNext(message) }
             .onSuccess { log.info("Published new message") }
             .onFailure { e -> log.warn(e) { "Error while publishing message" } }
     }
 
-    private fun mapToEntity(message: MessageDto) =
+    private fun mapToEntity(message: Message) =
         MessageEntity(id = 0L, author = message.author, message = message.message)
 
-    private fun mapToDto(message: MessageEntity) =
-        MessageReadDto(author = message.author, message = message.message, createdAt = message.createdAt)
+    private fun mapToMessage(message: MessageEntity) =
+        Message(author = message.author, message = message.message, createdAt = message.createdAt)
 }
