@@ -21,7 +21,7 @@ class MessageService(
             .let { mapToMessage(it) }
             .also { publish(it) }
 
-    fun findAll() = messageRepository.findAll().map { mapToMessage(it) }
+    fun findAll() = messageRepository.findByOrderByCreatedAtDesc().map { mapToMessage(it) }
 
     fun publish(message: Message) {
         runCatching { messageSink.tryEmitNext(message) }

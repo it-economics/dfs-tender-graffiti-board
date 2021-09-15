@@ -19,11 +19,10 @@ class TextMessageProcessor(
     private val validator: Validator
 ) {
 
-    fun processNewConnection(): List<TextMessage> {
-        return messageService.findAll()
+    fun processNewConnection(): List<TextMessage> =
+        messageService.findAll()
             .map { mapToReadDto(it) }
             .map { TextMessage(objectMapper.writeValueAsString(it)) }
-    }
 
     fun processNewMessage(textMessage: TextMessage): TextMessage {
         val message = objectMapper.readValue<MessageDto>(textMessage.payload)
