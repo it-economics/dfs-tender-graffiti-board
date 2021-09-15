@@ -11,7 +11,7 @@ internal class MessageDtoMapperTest {
 
     @Test
     internal fun `mapToMessage - complete message dto`() {
-        val messageDto = MessageDto(author = "John Doe", message = "Hello Wolrd")
+        val messageDto = MessageDto(author = "John Doe", message = "Hello World")
 
         val message = sut.mapToMessage(messageDto)
 
@@ -22,7 +22,7 @@ internal class MessageDtoMapperTest {
 
     @Test
     internal fun `mapToMessage - message dto without author`() {
-        val messageDto = MessageDto(author = null, message = "Hello Wolrd")
+        val messageDto = MessageDto(author = null, message = "Hello World")
 
         val message = sut.mapToMessage(messageDto)
 

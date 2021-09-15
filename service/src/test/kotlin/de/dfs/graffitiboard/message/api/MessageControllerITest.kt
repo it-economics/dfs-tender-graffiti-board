@@ -95,7 +95,8 @@ internal class MessageControllerITest(
     @ValueSource(
         strings = [
             "message_empty.json",
-            "message_invalid.json"
+            "message_invalid.json",
+            "message_author_invalid.json"
         ]
     )
     fun `post -- it should return bad request for invalid messages`(jsonFile: String) {

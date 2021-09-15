@@ -5,6 +5,7 @@ import javax.validation.constraints.Size
 
 data class MessageDto(
 
+    @field:Size(max = 100)
     val author: String?,
 
     @field:NotBlank
