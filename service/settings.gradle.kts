@@ -1,1 +1,1 @@
-rootProject.name = "graffiti-board"
+rootProject.name = "dfs-tender-graffiti-board"

@@ -110,7 +110,7 @@ jobs:
       - run:
           name: Container Image
           command: |
-            .circleci/docker.sh service backend backend
+            .circleci/docker.sh service graphittiboard backend
           no_output_timeout: 5m
 
 

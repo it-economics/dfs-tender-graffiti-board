@@ -37,6 +37,10 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
 
+springBoot {
+    buildInfo()
+}
+
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
@@ -46,4 +50,8 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.getByName<Jar>("jar") {
+    enabled = false
 }
