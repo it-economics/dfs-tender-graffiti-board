@@ -4,10 +4,16 @@ import {GraffitiContextProvider, IGraffiti, useGraffitiContext} from "./Graffiti
 export function GraffitiRoute() {
 	return (
 		<>
-			<h1 className="sm:text-3xl md:text-5xl text-center lg:pt-10 lg:pb-10">Graffiti AG</h1>
+			<h1 className="sm:text-3xl md:text-5xl text-center py-10">Graffiti AG</h1>
 			<GraffitiContextProvider>
-				<Graffities/>
-				<GraffitiForm/>
+				<div className="flex flex-col max-h-full">
+					<div className="pb-5 md:pb-16">
+						<GraffitiForm/>
+					</div>
+					<div>
+						<Graffities/>
+					</div>
+				</div>
 			</GraffitiContextProvider>
 		</>
 	);
@@ -15,10 +21,10 @@ export function GraffitiRoute() {
 
 function Graffities() {
 	const {graffities} = useGraffitiContext();
-
 	return (
-		<div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-10 sm:gap-7">
-			{graffities.map((graffiti, idx) =>
+		// <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-10 sm:gap-7">
+		<div className="flex flex-row flex-wrap gap-3 md:gap-5 justify-center">
+			{[...graffities].reverse().map((graffiti, idx) =>
 				<Graffiti key={`${graffiti.message.substr(0, 5)}-${graffiti.author}-${idx}`} graffiti={graffiti}/>
 			)}
 		</div>
@@ -49,29 +55,33 @@ function Graffiti({graffiti: {message, author}}: PropsWithChildren<{ graffiti: I
 	}
 
 	return (
-		<div className={`transform w-full grid items-end ${color()} `}>
+		<div className={`transform grid items-end ${color()} `}>
 			<span className={`transform sm:text-1xl md:text-3xl ${rotate()}`}>{message}</span>
-			<span className="text-right mx-28 my-10">{`- ${author ?? 'Anonymous'}`}</span>
+			<span className="text-right mx-28 my-3 md:my-5">{`- ${author ?? 'Anonymous'}`}</span>
 		</div>
 	)
 }
 
 function GraffitiForm() {
 	const {addGraffiti} = useGraffitiContext();
-	const [message, setMessage] = React.useState('')
-	const [author, setAuthor] = React.useState('')
+	const [message, setMessage] = React.useState<string>('')
+	const [author, setAuthor] = React.useState<string>('')
+	const canSubmit = message?.length ?? 0 > 0;
 
 	const handleSubmit: React.FormEventHandler<HTMLFormElement> = event => {
 		event.preventDefault();
-		addGraffiti({message, author})
-		setMessage('')
-		setAuthor('')
+		if (canSubmit) {
+			const submitAuthor = author !== '' ? author : undefined
+			addGraffiti({message, author: submitAuthor})
+			setMessage('')
+			setAuthor('')
+		}
 	}
 
 	return (
 		<form onSubmit={handleSubmit}>
 			<div className="flex justify-center">
-				<div className="flex gap-5">
+				<div className="flex flex-col items-center w-full md:w-auto md:items-end md:flex-row gap-5">
 					<div>
 						<label className="block">
 							<span>Nachricht</span>
@@ -88,8 +98,8 @@ function GraffitiForm() {
 								   id="author"/>
 						</label>
 					</div>
-					<div className="flex flex-column items-end">
-						<button type="submit" className="rounded dark:bg-green-900 dark:hover:bg-green-800 p-3">Senden</button>
+					<div className="md:flex md:flex-column md:items-end">
+						<button disabled={!canSubmit} type="submit" className="rounded dark:bg-green-900 dark:hover:bg-green-800 p-3">Senden</button>
 					</div>
 				</div>
 			</div>
