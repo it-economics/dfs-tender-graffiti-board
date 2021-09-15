@@ -38,7 +38,7 @@ class MessageController(
             .let { ResponseEntity.ok(it) }
 
     @GetMapping(value = ["/subscribe"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-    fun notifications(): ResponseEntity<Flux<MessageReadDto>> {
+    fun messages(): ResponseEntity<Flux<MessageReadDto>> {
         val cacheControl = CacheControl.noCache().noTransform()
 
         return ResponseEntity.ok()
