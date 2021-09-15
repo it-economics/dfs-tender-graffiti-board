@@ -1,9 +1,8 @@
 package de.dfs.graffitiboard.message.socket
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import de.dfs.graffitiboard.message.api.MessageDto
-import de.dfs.graffitiboard.message.api.MessageReadDto
+import de.dfs.graffitiboard.message.api.MessageDtoMapper
 import de.dfs.graffitiboard.message.service.Message
 import de.dfs.graffitiboard.message.service.MessageService
 import org.springframework.stereotype.Component
@@ -14,9 +13,10 @@ import javax.validation.Validator
 
 @Component
 class TextMessageProcessor(
+    private val validator: Validator,
     private val objectMapper: ObjectMapper,
     private val messageService: MessageService,
-    private val validator: Validator
+    private val messageDtoMapper: MessageDtoMapper
 ) {
 
     fun processNewConnection(): List<TextMessage> =
@@ -25,7 +25,7 @@ class TextMessageProcessor(
             .map { TextMessage(objectMapper.writeValueAsString(it)) }
 
     fun processNewMessage(textMessage: TextMessage): TextMessage {
-        val message = objectMapper.readValue<MessageDto>(textMessage.payload)
+        val message = objectMapper.readValue(textMessage.payload, MessageDto::class.java)
 
         val violations = validator.validate(message)
         val createdMessage = when {
@@ -42,6 +42,6 @@ class TextMessageProcessor(
         return ConstraintViolationException("{\"error\": \"$errorMessage\"", violations)
     }
 
-    private fun mapToMessage(message: MessageDto) = Message(message.author, message.message)
-    private fun mapToReadDto(message: Message) = MessageReadDto(message.author, message.message, message.createdAt)
+    private fun mapToMessage(message: MessageDto) = messageDtoMapper.mapToMessage(message)
+    private fun mapToReadDto(message: Message) = messageDtoMapper.mapToReadDto(message)
 }

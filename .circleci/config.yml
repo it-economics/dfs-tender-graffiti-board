@@ -46,11 +46,11 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - &gradle-wrapper-key v1-gradle-wrapper-{{ checksum "~/repo/gradle/wrapper/gradle-wrapper.properties" }}
+            - &gradle-wrapper-key v1-gradle-wrapper-{{ checksum "~/repo/service/gradle/wrapper/gradle-wrapper.properties" }}
             - v1-gradle-wrapper-
       - restore_cache:
           keys:
-            - &gradle-cache-key v1-gradle-cache-{{ checksum "~/repo/build.gradle.kts" }}
+            - &gradle-cache-key v1-gradle-cache-{{ checksum "~/repo/service/build.gradle.kts" }}
             - v1-gradle-cache-
 
   save_service_cache:
@@ -114,7 +114,7 @@ jobs:
       - run:
           name: Execute Tests
           command: |
-            cd service && ./gradlew coverage
+            cd service && ./gradlew test
       - store_test_results:
           path: service/build/test-results/test
 
@@ -171,9 +171,9 @@ workflows:
       - assemble_service:
           requires:
             - checkout_repo
-      #      - test_service:
-      #          requires:
-      #            - checkout_repo
+      - test_service:
+          requires:
+            - checkout_repo
       - build_container_image:
           <<: *dfs_context
           requires:

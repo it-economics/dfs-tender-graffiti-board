@@ -20,27 +20,29 @@ import javax.validation.Valid
 )
 @Secured(Roles.USER_ROLE)
 class MessageController(
+    private val messageDtoMapper: MessageDtoMapper,
     private val messageService: MessageService,
     private val messageFlux: Flux<Message>
 ) {
 
     @GetMapping
-    fun getAll(): List<MessageReadDto> = messageService.findAll().map { mapToReadDtp(it) }
+    fun getAll(): List<MessageReadDto> =
+        messageService.findAll()
+            .map { messageDtoMapper.mapToReadDto(it) }
 
     @PostMapping()
     fun post(@Valid @RequestBody message: MessageDto): ResponseEntity<MessageReadDto> =
-        messageService.create(Message(author = message.author, message = message.message))
-            .let { mapToReadDtp(it) }
+        messageDtoMapper.mapToMessage(message)
+            .let { messageService.create(it) }
+            .let { messageDtoMapper.mapToReadDto(it) }
             .let { ResponseEntity.ok(it) }
 
     @GetMapping(value = ["/subscribe"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-    fun notifications(): ResponseEntity<Flux<MessageReadDto>> {
+    fun messages(): ResponseEntity<Flux<MessageReadDto>> {
         val cacheControl = CacheControl.noCache().noTransform()
 
         return ResponseEntity.ok()
             .cacheControl(cacheControl)
-            .body(messageFlux.map { mapToReadDtp(it) })
+            .body(messageFlux.map { messageDtoMapper.mapToReadDto(it) })
     }
-
-    private fun mapToReadDtp(message: Message) = MessageReadDto(message.author, message.message, message.createdAt)
 }
