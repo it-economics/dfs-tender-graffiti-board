@@ -21,14 +21,14 @@ class MessageSocketHandler(
     private val sessions: MutableList<WebSocketSession> = CopyOnWriteArrayList()
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
-        log.info { "User '${session.principal?.name}' establishes socket connection" }
+        log.info { "New socket connection established" }
         sessions.add(session)
         super.afterConnectionEstablished(session)
         textMessageProcessor.processNewConnection().forEach { session.sendMessage(it) }
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
-        log.info { "User '${session.principal?.name}' closes socket connection" }
+        log.info { "Socket connection closed" }
         sessions.remove(session)
         super.afterConnectionClosed(session, status)
     }
