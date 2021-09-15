@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface MessageRepository : CrudRepository<MessageEntity, Long> {
 
-    fun findByOrderByCreatedAtDesc(): List<MessageEntity>
+    fun findByOrderByCreatedAtAsc(): List<MessageEntity>
 }
