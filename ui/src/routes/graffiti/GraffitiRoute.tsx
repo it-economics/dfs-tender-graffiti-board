@@ -23,7 +23,7 @@ function Graffities() {
 	const {graffities} = useGraffitiContext();
 	return (
 		<div className="flex flex-row flex-wrap gap-3 md:gap-5 justify-center">
-			{[...graffities].reverse().map((graffiti, idx) =>
+			{graffities.map((graffiti, idx) =>
 				<Graffiti key={`${graffiti.message.substr(0, 5)}-${graffiti.author}-${idx}`} graffiti={graffiti}/>
 			)}
 		</div>
