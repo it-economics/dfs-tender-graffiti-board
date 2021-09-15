@@ -162,7 +162,7 @@ jobs:
       - restore_repo_with_env
       - setup_remote_docker:
           docker_layer_caching: true
-      - run: .circleci/docker.sh ui pma ui
+      - run: .circleci/docker.sh ui graphitiboard ui
 
 workflows:
   version: 2
@@ -185,7 +185,7 @@ workflows:
 #      - test_ui:
 #          requires:
 #            - checkout_repo
-#      - container_image_ui:
-#          requires:
-#            - build_ui
+      - container_image_ui:
+          requires:
+            - build_ui
 #            - test_ui
