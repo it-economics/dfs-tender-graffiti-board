@@ -11,13 +11,13 @@ uses the backend to create and retrieve messages.
 
 ## API endpoints
 
-You can use the `/messages` endpoint to fetch all messages or to post a new message
+You can use the `/messages` endpoint to fetch all messages or post a new messages.
 
 ### Authorization
 
 The `messages` endpoint is secured using `Basic Auth` with username `John` and password `Doe`.
 
-### Get all messages
+### Get messages
 
 ````shell
 curl \
@@ -35,9 +35,9 @@ curl \
   -X POST http://localhost:8085/messages
 ````
 
-### Subscribe to messages
+### Subscribe to posted messages
 
-There is also an endpoint where you can listen to new messages using Server Sent Events mechanism.
+There is also an endpoint where you can listen to new messages using _Server Sent Events_.
 
 ````shell
 curl \
