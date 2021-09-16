@@ -126,7 +126,7 @@ jobs:
       - run:
           name: Container Image
           command: |
-            .circleci/docker.sh service graphittiboard backend
+            .circleci/docker.sh service graffitiboard backend
           no_output_timeout: 5m
 
   build_ui:
@@ -161,7 +161,7 @@ jobs:
     steps:
       - restore_repo_with_env
       - setup_remote_docker
-      - run: .circleci/docker.sh ui graphitiboard ui
+      - run: .circleci/docker.sh ui graffitiboard ui
 
 workflows:
   version: 2
