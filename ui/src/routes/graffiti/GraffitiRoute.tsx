@@ -1,5 +1,6 @@
 import React, {PropsWithChildren} from "react";
 import {GraffitiContextProvider, IGraffiti, useGraffitiContext} from "./GraffitiContext";
+import {isPalindrome} from "../../util/palindrome";
 
 export function GraffitiRoute() {
 	return (
@@ -50,9 +51,12 @@ function Graffiti({graffiti: {message, author}}: PropsWithChildren<{ graffiti: I
 		return '-rotate-6'
 	}
 
+	const messageWithHighlightedPalindromes = message.replace(/\b\w+\b/ig, word => isPalindrome(word) ?
+		`<span class="bg-pink-400">${word}</span>` : word)
+
 	return (
 		<div className={`transform grid items-end ${color()} `}>
-			<span className={`transform sm:text-1xl md:text-3xl ${rotate()}`}>{message}</span>
+			<span dangerouslySetInnerHTML={{__html: messageWithHighlightedPalindromes}} className={`transform sm:text-1xl md:text-3xl ${rotate()}`}/>
 			<span className="text-right mx-28 my-3 md:my-5">{`- ${author ?? 'Anonymous'}`}</span>
 		</div>
 	)
