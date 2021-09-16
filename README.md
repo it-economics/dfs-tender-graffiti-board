@@ -5,9 +5,9 @@
 This repository contains a simple application which let you add messages to a graffiti board so that every one can see
 them.
 
-The application is provided in two parts. First the backend part which provides an API and socket endpoint through these
-messages can be persisted and fetched. The second part consist of a frontend application which provides a simple ui and
-uses the backend to create and retrieve messages.
+The application is provided in two parts. First, the backend part, which provides an API and socket endpoint through
+which messages can be persisted and fetched. The second part consists of a frontend application which provides a simple
+UI and uses the backend to create and retrieve messages.
 
 ## API endpoints
 
