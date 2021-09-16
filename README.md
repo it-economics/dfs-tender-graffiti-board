@@ -9,6 +9,46 @@ The application is provided in two parts. First the backend part which provides 
 messages can be persisted and fetched. The second part consist of a frontend application which provides a simple ui and
 uses the backend to create and retrieve messages.
 
+## API endpoints
+
+You can use the `/messages` endpoint to fetch all messages or to post a new message
+
+### Authorization
+
+The `messages` endpoint is secured using `Basic Auth` with username `John` and password `Doe`.
+
+### Get all messages
+
+````shell
+curl \
+  -H "Authorization: Basic Sm9objpEb2U=" \
+  -X GET http://localhost:8085/messages
+````
+
+### Post message
+
+````shell
+curl \
+  -d '{"author":"John Doe", "message":"Hello World"}' \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Basic Sm9objpEb2U=" \
+  -X POST http://localhost:8085/messages
+````
+
+### Subscribe to messages
+
+There is also an endpoint where you can listen to new messages using Server Sent Events mechanism.
+
+````shell
+curl \
+  -H "Authorization: Basic Sm9objpEb2U=" \
+  -N http://localhost:8085/messages/subscribe
+````
+
+## WebSocket endpoint
+
+The frontend uses WebSockets to retrieve new messages in realtime. The endpoint is exposed at `/message-socket`.
+
 ## How to run it
 
 ### Backend
@@ -52,4 +92,4 @@ browser.
 
 ### Further reading
 
-A more detailed documentation about available scripts can be found [here](./ui/README.md) 
+A more detailed documentation about available scripts can be found [here](./ui/README.md). 
